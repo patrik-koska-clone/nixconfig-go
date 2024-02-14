@@ -57,45 +57,6 @@ func GetNixConfigURLs(URL string, token string) ([]string, error) {
 	return downloadURLs, nil
 }
 
-func GetNixConfigContents(downloadURLs []string, token string) ([]string, error) {
-	var (
-		contents    []string
-		contentResp ContentURLResponse
-	)
-
-	for _, url := range downloadURLs {
-
-		req, err := http.NewRequest(http.MethodGet, url, nil)
-		if err != nil {
-			return downloadURLs, err
-		}
-
-		req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
-
-		client := &http.Client{}
-
-		resp, err := client.Do(req)
-		if err != nil {
-			return downloadURLs, err
-		}
-		defer resp.Body.Close()
-
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return downloadURLs, err
-		}
-
-		err = json.Unmarshal(bodyBytes, &contentResp)
-		if err != nil {
-			return downloadURLs, err
-		}
-
-		contents = append(contents, contentResp.Content)
-	}
-
-	return contents, nil
-}
-
 func GetNixConfigContentsConcurrently(downloadURLs []string, token string) ([]string, error) {
 	var (
 		contents      []string
