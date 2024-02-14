@@ -23,24 +23,29 @@ func GetNixConfigURLs(URL string, token string) ([]string, error) {
 	var (
 		dlur         DownloadURLResponse
 		downloadURLs []string
+		req          *http.Request
+		err          error
+		client       *http.Client
+		resp         *http.Response
+		bodyBytes    []byte
 	)
 
-	req, err := http.NewRequest(http.MethodGet, URL, nil)
+	req, err = http.NewRequest(http.MethodGet, URL, nil)
 	if err != nil {
 		return downloadURLs, err
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 
-	client := &http.Client{}
+	client = &http.Client{}
 
-	resp, err := client.Do(req)
+	resp, err = client.Do(req)
 	if err != nil {
 		return downloadURLs, err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	bodyBytes, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return downloadURLs, err
 	}
