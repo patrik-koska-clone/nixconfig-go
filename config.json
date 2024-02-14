@@ -1,0 +1,5 @@
+{
+    "token":"tokenValue",
+    "output_directory":"nix-config",
+    "config_type": "configuration.nix"
+}
