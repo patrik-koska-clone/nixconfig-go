@@ -62,7 +62,7 @@ func GetNixConfigURLs(URL string, token string) ([]string, error) {
 	return downloadURLs, nil
 }
 
-func GetNixConfigContentsConcurrently(downloadURLs []string, token string) ([]string, error) {
+func GetNixConfigContents(downloadURLs []string, token string) ([]string, error) {
 	var (
 		contents      []string
 		contentResp   ContentURLResponse

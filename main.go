@@ -27,7 +27,7 @@ func main() {
 		log.Println("collecting from", u)
 	}
 
-	contents, err := requests.GetNixConfigContentsConcurrently(downloadURLs, c.Token)
+	contents, err := requests.GetNixConfigContents(downloadURLs, c.Token)
 	if err != nil {
 		log.Fatalf("could not get base64 file contents.\n%v", err)
 	}
