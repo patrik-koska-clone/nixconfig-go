@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"nixconfig-go/pkg/collector"
-	"nixconfig-go/pkg/config"
-	"nixconfig-go/pkg/requests"
-	"nixconfig-go/pkg/utils"
+
+	"github.com/patrik-koska-clone/nixconfig-go/pkg/collector"
+	"github.com/patrik-koska-clone/nixconfig-go/pkg/config"
+	"github.com/patrik-koska-clone/nixconfig-go/pkg/requests"
+	"github.com/patrik-koska-clone/nixconfig-go/pkg/utils"
 )
 
 func main() {
