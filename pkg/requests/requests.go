@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -67,31 +68,30 @@ func GetNixConfigURLs(URL string, token string) ([]string, []string, error) {
 
 func GetNixConfigContents(downloadURLs []string, token string) ([]string, error) {
 	var (
-		contents      []string
-		contentResp   ContentURLResponse
-		maxConcurrent int
-		semaphore     chan struct{}
-		errChan       chan error
-		cancel        context.CancelFunc
-		ctx           context.Context
-		req           *http.Request
-		err           error
-		client        *http.Client
-		resp          *http.Response
-		bodyBytes     []byte
-		finalErr      error
+		wg       sync.WaitGroup
+		mu       sync.Mutex
+		contents []string
+		errChan  chan error
+		finalErr error
 	)
-
-	maxConcurrent = 5
-	semaphore = make(chan struct{}, maxConcurrent)
 
 	contents = []string{}
 	errChan = make(chan error) // Channel for collecting errors
 
 	for _, url := range downloadURLs {
-		semaphore <- struct{}{} // Acquire a semaphore slot
+		wg.Add(1)
 		go func(url string) {
-			defer func() { <-semaphore }() // Release slot on completion
+			defer wg.Done()
+			var (
+				cancel      context.CancelFunc
+				ctx         context.Context
+				req         *http.Request
+				err         error
+				client      *http.Client
+				resp        *http.Response
+				bodyBytes   []byte
+				contentResp ContentURLResponse
+			)
 
 			ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel() // Ensure timeout goroutines also release a token
@@ -129,14 +129,13 @@ func GetNixConfigContents(downloadURLs []string, token string) ([]string, error)
 				return
 			}
 
+			mu.Lock()
 			contents = append(contents, contentResp.Content)
+			mu.Unlock()
 		}(url) // Pass the URL to the goroutine's closure
 	}
 
-	// Block and wait for all goroutines to complete
-	for i := 0; i < cap(semaphore); i++ {
-		semaphore <- struct{}{}
-	}
+	wg.Wait()
 
 	for i := 0; i < len(downloadURLs); i++ {
 		select {
