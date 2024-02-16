@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func PutFilesToDirectory(decodedContents []string, configType string, outputDir string) error {
+func PutFilesToDirectory(decodedContents []string, htmlURLs []string, configType string, outputDir string) error {
 	err := os.MkdirAll(outputDir, 0755)
 	if err != nil {
 		return err
@@ -26,6 +26,24 @@ func PutFilesToDirectory(decodedContents []string, configType string, outputDir 
 		if err != nil {
 			return err
 		}
+
+		nixFileName := fmt.Sprintf("%s/%d-%s",
+			outputDir,
+			i,
+			configType,
+		)
+		urlToAppend := "# appended url: " + htmlURLs[i] + "\n"
+
+		file, err := os.OpenFile(nixFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		if _, err := file.WriteString(urlToAppend); err != nil {
+			return err
+		}
 	}
 	return nil
+
 }

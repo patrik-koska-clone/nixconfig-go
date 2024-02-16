@@ -18,7 +18,7 @@ func main() {
 
 	baseURL := fmt.Sprintf("https://api.github.com/search/code?q=filename:%s+in:path", c.ConfigType)
 
-	downloadURLs, err := requests.GetNixConfigURLs(baseURL, c.Token)
+	downloadURLs, htmlURLs, err := requests.GetNixConfigURLs(baseURL, c.Token)
 	if err != nil {
 		log.Fatalf("could not get nix download urls.\n%v", err)
 	}
@@ -41,7 +41,7 @@ func main() {
 	}
 	log.Println("decoded base64 file contents...")
 
-	err = collector.PutFilesToDirectory(decodedContents, c.ConfigType, c.OutputDir)
+	err = collector.PutFilesToDirectory(decodedContents, htmlURLs, c.ConfigType, c.OutputDir)
 	if err != nil {
 		log.Fatalf("error writing nix files to directory.\n%v", err)
 	}

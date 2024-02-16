@@ -11,7 +11,8 @@ import (
 
 type DownloadURLResponse struct {
 	Items []struct {
-		GitUrl string `json:"git_url"`
+		GitUrl  string `json:"git_url"`
+		HTMLUrl string `json:"html_url"`
 	} `json:"items"`
 }
 
@@ -19,10 +20,11 @@ type ContentURLResponse struct {
 	Content string
 }
 
-func GetNixConfigURLs(URL string, token string) ([]string, error) {
+func GetNixConfigURLs(URL string, token string) ([]string, []string, error) {
 	var (
 		dlur         DownloadURLResponse
 		downloadURLs []string
+		htmlURLs     []string
 		req          *http.Request
 		err          error
 		client       *http.Client
@@ -32,7 +34,7 @@ func GetNixConfigURLs(URL string, token string) ([]string, error) {
 
 	req, err = http.NewRequest(http.MethodGet, URL, nil)
 	if err != nil {
-		return downloadURLs, err
+		return downloadURLs, htmlURLs, err
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("token %s", token))
@@ -41,25 +43,26 @@ func GetNixConfigURLs(URL string, token string) ([]string, error) {
 
 	resp, err = client.Do(req)
 	if err != nil {
-		return downloadURLs, err
+		return downloadURLs, htmlURLs, err
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return downloadURLs, err
+		return downloadURLs, htmlURLs, err
 	}
 
 	err = json.Unmarshal(bodyBytes, &dlur)
 	if err != nil {
-		return downloadURLs, err
+		return downloadURLs, htmlURLs, err
 	}
 
 	for _, dlu := range dlur.Items {
 		downloadURLs = append(downloadURLs, dlu.GitUrl)
+		htmlURLs = append(htmlURLs, dlu.HTMLUrl)
 	}
 
-	return downloadURLs, nil
+	return downloadURLs, htmlURLs, nil
 }
 
 func GetNixConfigContents(downloadURLs []string, token string) ([]string, error) {
