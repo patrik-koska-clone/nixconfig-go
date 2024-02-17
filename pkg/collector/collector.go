@@ -6,8 +6,13 @@ import (
 	"os"
 )
 
-func PutFilesToDirectory(decodedContents []string, htmlURLs []string, configType string, outputDir string) error {
-	err := os.MkdirAll(outputDir, 0755)
+func PutFilesToDirectory(decodedContents []string,
+	htmlURLs []string,
+	configType string,
+	outputDir string,
+	apiPageNumber int) error {
+
+	err := os.MkdirAll(fmt.Sprintf("%s/page-%d", outputDir, apiPageNumber), 0755)
 	if err != nil {
 		return err
 	} else {
@@ -16,8 +21,9 @@ func PutFilesToDirectory(decodedContents []string, htmlURLs []string, configType
 
 	for i, fileContent := range decodedContents {
 
-		err := os.WriteFile(fmt.Sprintf("%s/%d-%s",
+		err := os.WriteFile(fmt.Sprintf("%s/page-%d/%d-%s",
 			outputDir,
+			apiPageNumber,
 			i,
 			configType),
 			[]byte(fileContent),
@@ -27,12 +33,14 @@ func PutFilesToDirectory(decodedContents []string, htmlURLs []string, configType
 			return err
 		}
 
-		nixFileName := fmt.Sprintf("%s/%d-%s",
+		nixFileName := fmt.Sprintf("%s/page-%d/%d-%s",
 			outputDir,
+			apiPageNumber,
 			i,
 			configType,
 		)
-		urlToAppend := "# appended url: " + htmlURLs[i] + "\n"
+
+		urlToAppend := fmt.Sprintf("\n# appended url: %s\n", htmlURLs[i])
 
 		file, err := os.OpenFile(nixFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {

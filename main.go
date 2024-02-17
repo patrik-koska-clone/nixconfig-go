@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 
@@ -10,13 +11,27 @@ import (
 	"github.com/patrik-koska-clone/nixconfig-go/pkg/utils"
 )
 
+var (
+	apiPageNumber int
+	perPage       int
+)
+
+func init() {
+	flag.IntVar(&apiPageNumber, "page", 1, "The page number to download")
+	flag.IntVar(&perPage, "per-page", 100, "Amount of files to download per page")
+	flag.Parse()
+}
+
 func main() {
 	c, err := config.GetConfig("config.json")
 	if err != nil {
 		log.Fatalf("could not load config file. does it exist?\n%v", err)
 	}
 
-	baseURL := fmt.Sprintf("https://api.github.com/search/code?q=filename:%s+in:path", c.ConfigType)
+	baseURL := fmt.Sprintf("https://api.github.com/search/code?q=filename:%s+in:path&page=%d&per_page=%d",
+		c.ConfigType,
+		apiPageNumber,
+		perPage)
 
 	downloadURLs, htmlURLs, err := requests.GetNixConfigURLs(baseURL, c.Token)
 	if err != nil {
@@ -41,7 +56,7 @@ func main() {
 	}
 	log.Println("decoded base64 file contents...")
 
-	err = collector.PutFilesToDirectory(decodedContents, htmlURLs, c.ConfigType, c.OutputDir)
+	err = collector.PutFilesToDirectory(decodedContents, htmlURLs, c.ConfigType, c.OutputDir, apiPageNumber)
 	if err != nil {
 		log.Fatalf("error writing nix files to directory.\n%v", err)
 	}
