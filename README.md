@@ -48,4 +48,21 @@ total 2552
 -rw-r--r--@ 1 patrik.koska  staff   2228 Feb 17 04:40 12-configuration.nix
 ```
 
+## Setting up a development environment
+If you have nix installed and flakes enabled, you can start a minimal environment with
+`nix develop` from the repository root
+
+
+```
+➜  nixconfig-go git:(develop) ✗ nix develop     
+warning: Git tree '/home/pkoska/nixconfig-go' is dirty
+
+[pkoska@nixos:~/nixconfig-go]$ which go
+/nix/store/zg65r8ys8y5865lcwmmybrq5gn30n1az-go-1.21.6/bin/go
+
+[pkoska@nixos:~/nixconfig-go]$ go version
+go version go1.21.6 linux/amd64
+
+```
+
 **GL with hunting!**
