@@ -54,8 +54,9 @@ If you have nix installed and flakes enabled, you can start a minimal environmen
 
 
 ```
-➜  nixconfig-go git:(develop) ✗ nix develop     
-warning: Git tree '/home/pkoska/nixconfig-go' is dirty
+➜  nixconfig-go git:(main) nix develop
+[pkoska@nixos:~/nixconfig-go]$ 
+
 
 [pkoska@nixos:~/nixconfig-go]$ which go
 /nix/store/zg65r8ys8y5865lcwmmybrq5gn30n1az-go-1.21.6/bin/go
