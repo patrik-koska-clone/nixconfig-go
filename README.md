@@ -14,7 +14,7 @@ It has one configuration, `config.json` and one output directory which can be co
 
 **output_directory:** directory to place the downloaded nix files
 
-**config_type:** The nix configuration type, for example shell.nix, configuration.nix, etc...
+**config_type:** The nix configuration type, for example `shell.nix`, `configuration.nix`, etc...
 
 You can set the page number and the per-page amount for the download, for example:
 
