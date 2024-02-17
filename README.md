@@ -1,3 +1,5 @@
+## About nixconfig-go and requirements
+
 This little go script was developed to search for `.nix` files on GitHub, although it can be used to search
 for any files.
 It has one configuration, `config.json` and one output directory which can be configured.
@@ -12,19 +14,19 @@ It has one configuration, `config.json` and one output directory which can be co
 
 **token:** GitHub token with repository permissions
 
-**output_directory:** directory to place the downloaded nix files
+**output_directory:** Directory to place the downloaded nix files
 
 **config_type:** The nix configuration type, for example `shell.nix`, `configuration.nix`, etc...
 
 
-
+## Running nixconfig-go
 You can set the page number and the per-page amount for the download, for example:
 
 `bin/nixconfig-go --page 1 --per-page 100`
 
 
-
-the download files will be at `${OUTPUTDIR}/page-X`
+## Checking the output
+the downloaded files will be at `${OUTPUTDIR}/page-X`
 
 A successful search + download should look something like this:
 
@@ -46,4 +48,4 @@ total 2552
 -rw-r--r--@ 1 patrik.koska  staff   2228 Feb 17 04:40 12-configuration.nix
 ```
 
-GL with hunting!
+**GL with hunting!**
