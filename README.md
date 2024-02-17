@@ -17,6 +17,7 @@ It has one configuration, `config.json` and one output directory which can be co
 **config_type:** The nix configuration type, for example shell.nix, configuration.nix, etc...
 
 You can set the page number and the per-page amount for the download, for example:
+
 `bin/nixconfig-go --page 1 --per-page 100`
 
 the download files will be at `${OUTPUTDIR}/page-X`
