@@ -2,12 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/patrik-koska-clone/nixconfig-go/pkg/collector"
 	"github.com/patrik-koska-clone/nixconfig-go/pkg/config"
-	"github.com/patrik-koska-clone/nixconfig-go/pkg/requests"
+	githubadapter "github.com/patrik-koska-clone/nixconfig-go/pkg/githubadapter"
 	"github.com/patrik-koska-clone/nixconfig-go/pkg/utils"
 )
 
@@ -27,38 +26,25 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not load config file. does it exist?\n%v", err)
 	}
+	log.Println("config read success")
 
-	baseURL := fmt.Sprintf("https://api.github.com/search/code?q=filename:%s+in:path&page=%d&per_page=%d",
-		c.ConfigType,
-		apiPageNumber,
-		perPage)
+	ga := githubadapter.New(c)
 
-	downloadURLs, htmlURLs, err := requests.GetNixConfigURLs(baseURL, c.Token)
+	base64Contents, downloadURLs, err := ga.SearchAndDownload(apiPageNumber, perPage, c.ConfigType)
 	if err != nil {
-		log.Fatalf("could not get nix download urls.\n%v", err)
+		log.Fatalf("could not search api\n%v", err)
 	}
-	log.Println("got download urls, extracting...")
+	log.Println("got downloaded contents..")
 
-	for _, u := range downloadURLs {
-		log.Println("collecting from", u)
-	}
-
-	contents, err := requests.GetNixConfigContents(downloadURLs, c.Token)
+	decodedContents, err := utils.DecodeFromB64(base64Contents)
 	if err != nil {
-		log.Fatalf("could not get base64 file contents.\n%v", err)
+		log.Fatalf("could not decode base64 contents\n%v", err)
 	}
+	log.Println("decoded base64 contents..")
 
-	log.Println("accessing base64 file contents from json...")
-
-	decodedContents, err := utils.DecodeFromB64(contents)
+	err = collector.PutFilesToDirectory(decodedContents, downloadURLs, c.ConfigType, c.OutputDir, apiPageNumber)
 	if err != nil {
-		log.Fatalf("error decoding base64 contents from response json.\n%v", err)
+		log.Fatalf("could not write files to directory\n%v", err)
 	}
-	log.Println("decoded base64 file contents...")
 
-	err = collector.PutFilesToDirectory(decodedContents, htmlURLs, c.ConfigType, c.OutputDir, apiPageNumber)
-	if err != nil {
-		log.Fatalf("error writing nix files to directory.\n%v", err)
-	}
-	log.Printf("nix files collected successfully to %s.\n", c.OutputDir)
 }

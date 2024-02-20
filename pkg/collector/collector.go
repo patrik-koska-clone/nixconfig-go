@@ -6,8 +6,7 @@ import (
 	"os"
 )
 
-func PutFilesToDirectory(decodedContents []string,
-	htmlURLs []string,
+func PutFilesToDirectory(decodedContents, downloadURLs []string,
 	configType string,
 	outputDir string,
 	apiPageNumber int) error {
@@ -24,7 +23,7 @@ func PutFilesToDirectory(decodedContents []string,
 		err := os.WriteFile(fmt.Sprintf("%s/page-%d/%d-%s",
 			outputDir,
 			apiPageNumber,
-			i,
+			i+1,
 			configType),
 			[]byte(fileContent),
 			0644)
@@ -36,11 +35,11 @@ func PutFilesToDirectory(decodedContents []string,
 		nixFileName := fmt.Sprintf("%s/page-%d/%d-%s",
 			outputDir,
 			apiPageNumber,
-			i,
+			i+1,
 			configType,
 		)
 
-		urlToAppend := fmt.Sprintf("\n# appended url: %s\n", htmlURLs[i])
+		urlToAppend := fmt.Sprintf("\n# appended url: %s\n", downloadURLs[i])
 
 		file, err := os.OpenFile(nixFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
