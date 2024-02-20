@@ -42,7 +42,7 @@ func New(c config.Config) GithubAdapter {
 
 }
 
-func (g *GithubAdapter) SearchAndDownload(
+func (g GithubAdapter) SearchAndDownload(
 	page, perPage int,
 	fileName string) ([]string, []string, error) {
 
